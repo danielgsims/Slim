@@ -85,8 +85,8 @@ class App extends \Pimple\Container
             $method = $env['REQUEST_METHOD'];
             $uri = Http\Uri::createFromEnvironment($env);
             $headers = Http\Headers::createFromEnvironment($env);
-            $cookies = new Collection(Http\Cookies::parseHeader($headers->get('Cookie')));
-            $serverParams = new Collection($env->all());
+            $cookies = new Http\Collection(Http\Cookies::parseHeader($headers->get('Cookie')));
+            $serverParams = new Http\Collection($env->all());
             $body = new Http\Body(fopen('php://input', 'r'));
 
             return new Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);
@@ -336,21 +336,6 @@ class App extends \Pimple\Container
         $response = $this['response']->withStatus($status);
         $response->write($message);
         $this->stop($response);
-    }
-
-    /**
-     * Redirect
-     *
-     * This method returns a new 3XX HTTP response object to specific URL.
-     *
-     * @param string $url    The destination URL
-     * @param int    $status The HTTP redirect status code (optional)
-     *
-     * @return \Slim\Http\Response
-     */
-    public function redirect($url, $status = 302)
-    {
-        return $this['response']->withStatus($status)->withHeader('Location', $url);
     }
 
     /********************************************************************************

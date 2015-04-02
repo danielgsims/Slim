@@ -8,7 +8,7 @@
  */
 
 use \Slim\App;
-use \Slim\Collection;
+use \Slim\Http\Collection;
 use \Slim\Http\Environment;
 use \Slim\Http\Uri;
 use \Slim\Http\Body;
@@ -157,14 +157,6 @@ class AppTest extends PHPUnit_Framework_TestCase
             $this->assertAttributeEquals(400, 'status', $res);
             $this->assertEquals('Bad', (string)$body);
         }
-    }
-
-    public function testRedirect()
-    {
-        $app = new App();
-        $res = $app->redirect('http://slimframework.com', 301);
-        $this->assertEquals(301, $res->getStatusCode());
-        $this->assertEquals('http://slimframework.com', $res->getHeader('Location'));
     }
 
     /********************************************************************************
