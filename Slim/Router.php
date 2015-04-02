@@ -10,6 +10,7 @@ namespace Slim;
 
 use Psr\Http\Message\RequestInterface;
 use Slim\Interfaces\RouterInterface;
+use Slim\Interfaces\ResolverInterface;
 
 /**
  * Router
@@ -41,15 +42,24 @@ class Router extends \FastRoute\RouteCollector implements RouterInterface
     protected $routeGroups = [];
 
     /**
+     * Resolver
+     *
+     * @var null|Slim\Interfaces\ResolverInterface
+     */
+    protected $resolver;
+
+    /**
      * Create new router
      *
      * @param \FastRoute\RouteParser   $parser
      * @param \FastRoute\DataGenerator $generator
      */
-    public function __construct(\FastRoute\RouteParser $parser = null, \FastRoute\DataGenerator $generator = null)
+    public function __construct(ResolverInterface $resolver, \FastRoute\RouteParser $parser = null, \FastRoute\DataGenerator $generator = null)
     {
         $parser = $parser ? $parser : new \FastRoute\RouteParser\Std;
         $generator = $generator ? $generator : new \FastRoute\DataGenerator\GroupCountBased;
+        $this->resolver = $resolver;
+
         parent::__construct($parser, $generator);
     }
 
@@ -64,14 +74,19 @@ class Router extends \FastRoute\RouteCollector implements RouterInterface
      */
     public function map($methods, $pattern, $handler)
     {
+        $resolvedHandler = $this->resolver->build($handler);
+
         // Prepend group pattern
         list($groupPattern, $groupMiddleware) = $this->processGroups();
         $pattern = $groupPattern . $pattern;
 
         // Add route
-        $route = new Route($methods, $pattern, $handler);
+        $route = new Route($methods, $pattern, $resolvedHandler);
         foreach ($groupMiddleware as $middleware) {
-            $route->add($middleware);
+            $resolvedMiddleware = $this->resolver->build($middleware);
+            print_r($resolvedMiddleware);
+            exit;
+            $route->add($resolvedMiddleware);
         }
         $this->addRoute($methods, $pattern, [$route, 'run']);
         $this->routes[] = $route;

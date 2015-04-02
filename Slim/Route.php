@@ -19,10 +19,7 @@ use Pimple\ServiceProviderInterface;
  */
 class Route implements RouteInterface, ServiceProviderInterface
 {
-    use ResolveCallable;
-    use MiddlewareAware {
-        add as addMiddleware;
-    }
+    use MiddlewareAware;
 
     /**
      * HTTP methods supported by this route
@@ -72,25 +69,6 @@ class Route implements RouteInterface, ServiceProviderInterface
         $this->pattern = $pattern;
         $this->setCallable($callable);
         $this->seedMiddlewareStack();
-    }
-
-    /**
-     * Add middleware
-     *
-     * This method prepends new middleware to the route's middleware stack.
-     *
-     * @param  mixed    $callable The callback routine
-     *
-     * @return RouteInterface
-     */
-    public function add($callable)
-    {
-        $callable = $this->resolveCallable($callable);
-        if ($callable instanceof \Closure) {
-            $callable = $callable->bindTo($this->container);
-        }
-
-        return $this->addMiddleware($callable);
     }
 
     /**

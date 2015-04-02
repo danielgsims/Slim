@@ -36,7 +36,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->router = new \Slim\Router;
+        $c = new \Pimple\Container;
+        $r = new \Slim\Resolver($c);
+        $this->router = new \Slim\Router($r);
     }
 
     public function testMap()

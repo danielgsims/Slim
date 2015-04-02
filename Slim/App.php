@@ -115,7 +115,7 @@ class App extends \Pimple\Container
          * of \Slim\Interfaces\RouterInterface.
          */
         $this['router'] = function ($c) {
-            return new Router();
+            return new Router($c['resolver']);
         };
 
         /**
@@ -167,7 +167,7 @@ class App extends \Pimple\Container
          * of \Slim\Interfaces\RouterInterface.
          */
         $this['resolver'] = function($c) {
-            return new Resolvers\DependencyResolver($c);
+            return new Resolver($c);
         };
     }
 
@@ -268,13 +268,8 @@ class App extends \Pimple\Container
             throw new \InvalidArgumentException('Route pattern must be a string');
         }
 
-        $callable = $this['resolver']->build($callable);
-
-        if ($callable instanceof \Closure) {
-            $callable = $callable->bindTo($this);
-        }
-
         $route = $this['router']->map($methods, $pattern, $callable);
+
         if ($route instanceof ServiceProviderInterface) {
             $route->register($this);
         }

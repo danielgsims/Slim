@@ -31,6 +31,7 @@
  */
 
 use Slim\Route;
+use Slim\Resolver;
 use Slim\Collection;
 use Pimple\Container;
 
@@ -125,9 +126,14 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $route = $this->routeFactory();
 
+        //@todo: this should be a part of the Resolver test
         $container = new Container();
+
+        $resolver = new Resolver($container);
         $route->register($container);
-        $route->add('MiddlewareStub:run');
+
+        $callable = $resolver->build("MiddlewareStub:run");
+        $route->add($callable);
 
         $env = \Slim\Http\Environment::mock();
         $uri = \Slim\Http\Uri::createFromString('https://example.com:80');
