@@ -45,9 +45,6 @@ class Resolver implements ResolverInterface
         }
 
         if (!is_callable($callable)) {
-            print_r($callable);
-            var_dump($callable);
-            exit;
             throw new \RuntimeException('Expected a callable to be added');
         }
 
