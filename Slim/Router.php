@@ -74,18 +74,23 @@ class Router extends \FastRoute\RouteCollector implements RouterInterface
      */
     public function map($methods, $pattern, $handler)
     {
-        $resolvedHandler = $this->resolver->build($handler);
+        if (!is_callable($handler)) {
+
+            if (!isset($this->resolver)) {
+                throw new \Exception("Cannot process Route handler");
+            }
+
+            $handler = $this->resolver->build($handler);
+        }
 
         // Prepend group pattern
         list($groupPattern, $groupMiddleware) = $this->processGroups();
         $pattern = $groupPattern . $pattern;
 
         // Add route
-        $route = new Route($methods, $pattern, $resolvedHandler);
+        $route = new Route($methods, $pattern, $handler);
         foreach ($groupMiddleware as $middleware) {
             $resolvedMiddleware = $this->resolver->build($middleware);
-            print_r($resolvedMiddleware);
-            exit;
             $route->add($resolvedMiddleware);
         }
         $this->addRoute($methods, $pattern, [$route, 'run']);
