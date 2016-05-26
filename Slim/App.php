@@ -346,6 +346,11 @@ class App
         return $response;
     }
 
+    private function headersSent()
+    {
+        return headers_sent();
+    }
+
     /**
      * Send the response the client
      *
@@ -354,7 +359,7 @@ class App
     public function respond(ResponseInterface $response)
     {
         // Send response
-        if (!headers_sent()) {
+        if (!$this->headersSent()) {
             // Status
             header(sprintf(
                 'HTTP/%s %s %s',
