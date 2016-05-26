@@ -353,8 +353,10 @@ class App
      */
     public function respond(ResponseInterface $response)
     {
+        $headersSent = $this->container->get('headersSent');
+
         // Send response
-        if (!headers_sent()) {
+        if (!$headersSent()) {
             // Status
             header(sprintf(
                 'HTTP/%s %s %s',

@@ -200,5 +200,12 @@ class DefaultServicesProvider
                 return new CallableResolver($container);
             };
         }
+
+
+        if (!isset($container['headersSent'])) {
+            $container['headersSent'] = $container->protect(function() {
+                return headers_sent();
+            });
+        }
     }
 }
